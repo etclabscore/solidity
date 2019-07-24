@@ -4,7 +4,7 @@
 Mapping Types
 =============
 
-You declare mapping types with the syntax ``mapping(_KeyType => _ValueType)``.
+You declare mapping types with the syntax ``mapping(_KeyType => _ValueType) _VariableModifiers _VariableName``.
 The ``_KeyType`` can be any elementary type. This means it can be any of
 the built-in value types plus ``bytes`` and ``string``. User-defined
 or complex types like contract types, enums, mappings, structs and any array type
@@ -26,11 +26,16 @@ They cannot be used as parameters or return parameters
 of contract functions that are publicly visible.
 
 You can mark state variables of mapping type as ``public`` and Solidity creates a
-:ref:`getter <visibility-and-getters>` for you. The ``_KeyType`` becomes a
-parameter for the getter. If ``_ValueType`` is a value type or a struct,
-the getter returns ``_ValueType``.
+:ref:`getter <visibility-and-getters>` for you. The ``_KeyType`` is the parameter for the getter.
+If ``_ValueType`` is a value type or a struct, the getter returns ``_ValueType``.
 If ``_ValueType`` is an array or a mapping, the getter has one parameter for
-each ``_KeyType``, recursively. For example with a mapping:
+each ``_KeyType``, recursively.
+
+In the example below, the ``MappingExample`` contract defines a public ``balances``
+mapping, with the key type an ``address``, and a value type a ``uint``, mapping
+an unisgned integer value to an Ethereum address. As ``uint`` is a value type, the getter
+returns a value that matches the type, which you can see in the ``MappingUser``
+contract that returns the value at the specified address.
 
 ::
 

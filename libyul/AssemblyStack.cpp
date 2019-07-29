@@ -34,6 +34,10 @@
 #include <libyul/backends/evm/EVMMetrics.h>
 #include <libyul/backends/wasm/WasmDialect.h>
 #include <libyul/backends/wasm/EWasmObjectCompiler.h>
+
+#include <libyul/backends/llvmir/LLVMIRDialect.h>
+#include <libyul/backends/llvmir/LLVMIRObjectCompiler.h>
+
 #include <libyul/optimiser/Metrics.h>
 #include <libyul/ObjectParser.h>
 #include <libyul/optimiser/Suite.h>
@@ -61,6 +65,8 @@ Dialect const& languageToDialect(AssemblyStack::Language _language, EVMVersion _
 		return Dialect::yul();
 	case AssemblyStack::Language::EWasm:
 		return WasmDialect::instance();
+	case AssemblyStack::Language::LLVMIR:
+		return LLVMIRDialect();
 	}
 	solAssert(false, "");
 	return Dialect::yul();
@@ -201,6 +207,11 @@ MachineAssemblyObject AssemblyStack::assemble(Machine _machine) const
 
 		MachineAssemblyObject object;
 		object.assembly = EWasmObjectCompiler::compile(*m_parserResult, dialect);
+		return object;
+	}
+    case Machine::LLVMIR:
+    {
+		MachineAssemblyObject object;
 		return object;
 	}
 	}

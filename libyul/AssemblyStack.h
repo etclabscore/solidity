@@ -57,8 +57,8 @@ struct MachineAssemblyObject
 class AssemblyStack
 {
 public:
-	enum class Language { Yul, Assembly, StrictAssembly, EWasm };
-	enum class Machine { EVM, EVM15, eWasm };
+	enum class Language { Yul, Assembly, StrictAssembly, EWasm, LLVMIR };
+	enum class Machine { EVM, EVM15, eWasm, LLVMIR };
 
 	AssemblyStack():
 		AssemblyStack(langutil::EVMVersion{}, Language::Assembly, dev::solidity::OptimiserSettings::none())

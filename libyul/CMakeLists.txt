@@ -1,3 +1,14 @@
+
+# TODO: implement details described at:
+# http://llvm.org/docs/CMake.html#embedding-llvm-in-your-project
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+include_directories(${LLVM_INCLUDE_DIRS})
+add_definitions(${LLVM_DEFINITIONS})
+
 add_library(yul
 	AsmAnalysis.cpp
 	AsmAnalysis.h
@@ -25,6 +36,14 @@ add_library(yul
 	Utilities.cpp
 	Utilities.h
 	YulString.h
+
+    backends/llvmir/LLVMIRDialect.h
+    backends/llvmir/LLVMIRDialect.cpp
+    backends/llvmir/LLVMIRCodeTransform.h
+    backends/llvmir/LLVMIRCodeTransform.cpp
+    backends/llvmir/LLVMIRObjectCompiler.cpp
+    backends/llvmir/LLVMIRObjectCompiler.h
+
 	backends/evm/AbstractAssembly.h
 	backends/evm/AsmCodeGen.h
 	backends/evm/AsmCodeGen.cpp
@@ -42,6 +61,7 @@ add_library(yul
 	backends/evm/EVMMetrics.h
 	backends/evm/NoOutputAssembly.h
 	backends/evm/NoOutputAssembly.cpp
+
 	backends/wasm/EVMToEWasmTranslator.cpp
 	backends/wasm/EVMToEWasmTranslator.h
 	backends/wasm/EWasmCodeTransform.cpp
@@ -54,6 +74,7 @@ add_library(yul
 	backends/wasm/WasmDialect.h
 	backends/wasm/WordSizeTransform.cpp
 	backends/wasm/WordSizeTransform.h
+
 	optimiser/ASTCopier.cpp
 	optimiser/ASTCopier.h
 	optimiser/ASTWalker.cpp

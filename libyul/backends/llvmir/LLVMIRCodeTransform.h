@@ -20,7 +20,10 @@
 
 #pragma once
 
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
+#include <llvm/ADT/StringRef.h>
 
 #include <libyul/AsmDataForward.h>
 #include <libyul/Dialect.h>
@@ -62,8 +65,11 @@ private:
 		Dialect const& _dialect,
 		Block const& _ast
 	):
-		m_dialect(_dialect)
-	{}
+		m_dialect(_dialect),
+		m_context(),
+		m_module(llvm::StringRef(std::string("yul")), m_context)
+	{
+	}
 
 	std::unique_ptr<llvm::Value*> visit(yul::Expression const& _expression);
 	llvm::Value* visitReturnByValue(yul::Expression const& _expression);
@@ -91,6 +97,9 @@ private:
 	std::vector<llvm::Value*> m_globalVariables;
 	std::map<YulString, llvm::Value*> m_functionsToImport;
 	std::stack<std::pair<std::string, std::string>> m_breakContinueLabelNames;
+	
+	llvm::LLVMContext m_context;
+	llvm::Module m_module;
 };
 
 }

@@ -38,7 +38,6 @@ using namespace yul;
 
 string LLVMIRCodeTransform::run(Dialect const& _dialect, yul::Block const& _ast)
 {
-
 	return "";
 }
 

@@ -133,7 +133,7 @@ llvm::Value* LLVMIRCodeTransform::operator()(Block const& _block)
 
 unique_ptr<llvm::Value*> LLVMIRCodeTransform::visit(yul::Expression const& _expression)
 {
-	return make_unique<llvm::Value*>(boost::apply_visitor(*this, _expression));
+	return std::make_unique<llvm::Value*>(boost::apply_visitor(*this, _expression));
 }
 
 llvm::Value* LLVMIRCodeTransform::visitReturnByValue(yul::Expression const& _expression)

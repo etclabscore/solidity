@@ -23,6 +23,7 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
+#include <llvm/IR/Type.h>
 #include <llvm/ADT/StringRef.h>
 
 #include <libyul/AsmDataForward.h>
@@ -101,5 +102,28 @@ private:
 	llvm::LLVMContext m_context;
 	llvm::Module m_module;
 };
+
+/*
+ * Simple provider for YUL types.
+ */
+class YulTypeProvider {
+public:
+	YulTypeProvider(llvm::LLVMContext const& context):
+	{
+
+	}
+private:
+	llvm::Type* m_bool;
+	llvm::Type* m_u8;
+	llvm::Type* m_s8;
+	llvm::Type* m_u32;
+	llvm::Type* m_s32;
+	llvm::Type* m_u64;
+	llvm::Type* m_s64;
+	llvm::Type* m_u128;
+	llvm::Type* m_s128;
+	llvm::Type* m_u256;
+	llvm::Type* m_s256;
+}
 
 }

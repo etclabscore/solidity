@@ -46,10 +46,22 @@ llvm::Value* LLVMIRCodeTransform::generateMultiAssignment(
 	unique_ptr<llvm::Value*> _firstValue
 )
 {
+	yulAssert(!_variableNames.empty(), "generateMultiAssignment received empty variable names list");
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(VariableDeclaration const& _varDecl)
 {
+	vector<string> variableNames;
+	for (auto const& var: _varDecl.variables)
+	{
+		variableNames.emplace_back(var.name.str());
+		// Generate
+	}
+	if _varDecl.value {
+		llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_varDecl.value);
+	} else {
+		m_builder.
+	}
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(Assignment const& _assignment)

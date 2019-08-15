@@ -24,6 +24,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Type.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/ADT/StringRef.h>
 
 #include <libyul/AsmDataForward.h>
@@ -108,22 +109,79 @@ private:
  */
 class YulTypeProvider {
 public:
-	YulTypeProvider(llvm::LLVMContext const& context):
+	YulTypeProvider(llvm::LLVMContext & context):
+		m_bool(llvm::IntegerType::get(context, 1)),
+		m_u8(llvm::IntegerType::get(context, 8)),
+		m_s8(llvm::IntegerType::get(context, 8)),
+		m_u32(llvm::IntegerType::get(context, 32)),
+		m_s32(llvm::IntegerType::get(context, 32)),
+		m_u64(llvm::IntegerType::get(context, 64)),
+		m_s64(llvm::IntegerType::get(context, 64)),
+		m_u128(llvm::IntegerType::get(context, 128)),
+		m_s128(llvm::IntegerType::get(context, 128)),
+		m_u256(llvm::IntegerType::get(context, 256)),
+		m_s256(llvm::IntegerType::get(context, 256))
 	{
+	}
 
+	llvm::IntegerType* bool_type() {
+		return m_bool;
+	}
+
+	llvm::IntegerType* u8_type() {
+		return m_u8;
+	}
+
+	llvm::IntegerType* s8_type() {
+		return m_s8;
+	}
+
+	llvm::IntegerType* u32_type() {
+		return m_u32;
+	}
+
+	llvm::IntegerType* s32_type() {
+		return m_s32;
+	}
+
+	llvm::IntegerType* u64_type() {
+		return m_u64;
+	}
+
+	llvm::IntegerType* s64_type() {
+		return m_s64;
+	}
+
+	llvm::IntegerType* u128_type() {
+		return m_u128;
+	}
+
+	llvm::IntegerType* s128_type() {
+		return m_s128;
+	}
+
+	llvm::IntegerType* u256_type() {
+		return m_u256;
+	}
+
+	llvm::IntegerType* s256_type() {
+		return m_s256;
 	}
 private:
-	llvm::Type* m_bool;
-	llvm::Type* m_u8;
-	llvm::Type* m_s8;
-	llvm::Type* m_u32;
-	llvm::Type* m_s32;
-	llvm::Type* m_u64;
-	llvm::Type* m_s64;
-	llvm::Type* m_u128;
-	llvm::Type* m_s128;
-	llvm::Type* m_u256;
-	llvm::Type* m_s256;
-}
+	// NOTE: Because LLVM does not distinguish between signed and unsigned integers, there is no difference here.
+	// These are only distinguished for readability. If an integer type of some width was already instantiated, then it will
+	// return the same pointer. 
+	llvm::IntegerType* m_bool;
+	llvm::IntegerType* m_u8;
+	llvm::IntegerType* m_s8;
+	llvm::IntegerType* m_u32;
+	llvm::IntegerType* m_s32;
+	llvm::IntegerType* m_u64;
+	llvm::IntegerType* m_s64;
+	llvm::IntegerType* m_u128;
+	llvm::IntegerType* m_s128;
+	llvm::IntegerType* m_u256;
+	llvm::IntegerType* m_s256;
+};
 
 }

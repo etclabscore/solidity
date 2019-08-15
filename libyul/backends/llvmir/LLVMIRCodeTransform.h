@@ -22,6 +22,7 @@
 
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
@@ -69,6 +70,7 @@ private:
 	):
 		m_dialect(_dialect),
 		m_context(),
+		m_builder(m_context),
 		m_module(llvm::StringRef(std::string("yul")), m_context)
 	{
 	}
@@ -102,6 +104,7 @@ private:
 	
 	llvm::LLVMContext m_context;
 	llvm::Module m_module;
+	llvm::IRBuilder<> m_builder;
 };
 
 /*

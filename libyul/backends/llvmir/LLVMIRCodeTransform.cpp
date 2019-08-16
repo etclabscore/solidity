@@ -38,34 +38,47 @@ using namespace yul;
 
 string LLVMIRCodeTransform::run(Dialect const& _dialect, yul::Block const& _ast)
 {
-	return "";
+	LLVMIRCodeTransform transform(_dialect, _ast);
+
+	for (auto const& s: _ast.statements) {
+		yulAssert(s.type() == typeid(yul::FunctionDefinition),
+		"Expected only function definitions at highest level"
+		);
+		if (s.type() == typeid(yul::FunctionDefinition)) {
+			transform.translateFunction(boost::get<yul::FunctionDefinition>(s));
+		}
+		// TODO: Insert builtin funcs
+	}
+	//return &transform.m_module; // FIXME: return properly
 }
 
-llvm::Value* LLVMIRCodeTransform::generateMultiAssignment(
-	vector<string> _variableNames,
-	unique_ptr<llvm::Value*> _firstValue
-)
-{
-	yulAssert(!_variableNames.empty(), "generateMultiAssignment received empty variable names list");
-}
-
+// Creates a basic block containing a set of allocas + stores to append to another block
 llvm::Value* LLVMIRCodeTransform::operator()(VariableDeclaration const& _varDecl)
 {
-	vector<string> variableNames;
-	for (auto const& var: _varDecl.variables)
-	{
-		variableNames.emplace_back(var.name.str());
-		// Generate
-	}
-	if _varDecl.value {
+	llvm::BasicBlock* ret = llvm::BasicBlock::Create(m_context);
+	m_builder.SetInsertPoint(ret);
+	if (_varDecl.value) {
 		llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_varDecl.value);
+
+		for (auto const& var: _varDecl.variables) {
+			// NOTE: Right now we do not check that init_expr returns multiple values.
+			// TODO: Fix this
+			m_builder.CreateLoad(init_expr->getType(), &*init_expr);
+		}
 	} else {
-		m_builder.
+		for (auto const& var: _varDecl.variables) {
+			m_builder.CreateAlloca(m_types.from_yul(var.type));
+		}
 	}
+
+	return ret;
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(Assignment const& _assignment)
 {
+	// NOTE: Assumes caller has positioned the builder correctly.
+	llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_assignment.value);
+	//m_builder.CreateLoad(
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(StackAssignment const&)
@@ -181,4 +194,7 @@ void LLVMIRCodeTransform::translateFunction(yul::FunctionDefinition const& _fun)
 
 void LLVMIRCodeTransform::allocateGlobals(size_t _amount)
 {
+	// while (m_globalVariables.size() < _amount) {
+	// 	m_globalVariables.emplace_back(
+	// }
 }

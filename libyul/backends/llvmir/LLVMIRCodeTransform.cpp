@@ -52,17 +52,17 @@ string LLVMIRCodeTransform::run(Dialect const& _dialect, yul::Block const& _ast)
 	//return &transform.m_module; // FIXME: return properly
 }
 
-void generateMultiAssignment(
+void LLVMIRCodeTransform::generateMultiAssignment(
 	unique_ptr<llvm::Value*> _firstValue
 )
 {
 	// NOTE: We expect the caller to have correctly positioned the builder before generating assignments.
-	yulAssert(!_variableNames.empty(), "");
-	
-	if (_variableNames.size() == 1) {
-		llvm::Value* alloca = m_builder.CreateAlloca(*_firstValue->getType());
-		m_builder.CreateStore(*_firstValue, _alloca);
-	}
+	// if (_variableNames.size() == 1) {
+	// 	llvm::Value* alloca = m_builder.CreateAlloca(*_firstValue->getType());
+	// 	m_builder.CreateStore(*_firstValue, alloca);
+	// }
+	llvm::Value* alloca = m_builder.CreateAlloca((*_firstValue)->getType());
+	m_builder.CreateStore(*_firstValue, alloca);
 
 	// TODO: multi assignments
 	//for (size_t i = 1; i < _variableNames.size(); i++) {
@@ -80,14 +80,14 @@ llvm::Value* LLVMIRCodeTransform::operator()(VariableDeclaration const& _varDecl
 
 	for (auto const& v: _varDecl.variables) {
 		// Create alloca for variable.
-		let alloca = m_builder.CreateAlloca(m_types.from_yul(var.type), nullptr, v.name.str());
+		auto alloca = m_builder.CreateAlloca(m_types.from_yul(v.type), nullptr, v.name.str());
 		m_localVariables.emplace_back(alloca);
 	}
 
 	// If a value is assigned, then generate assignment code as well.
 	if (_varDecl.value) {
 		llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_varDecl.value);
-		generateMultiAssignment(init_expr);
+		generateMultiAssignment(std::make_unique<llvm::Value*>(&*init_expr));
 	}
 	return ret;
 }
@@ -97,6 +97,8 @@ llvm::Value* LLVMIRCodeTransform::operator()(Assignment const& _assignment)
 	// NOTE: Assumes caller has positioned the builder correctly.
 	auto const& idents = _assignment.variableNames;
 	llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_assignment.value);
+
+	return {};
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(StackAssignment const&)
@@ -139,7 +141,7 @@ llvm::Value* LLVMIRCodeTransform::operator()(Literal const& _literal)
 
 llvm::Value* LLVMIRCodeTransform::operator()(yul::Instruction const&)
 {
-	yulAssert(false, "EVM instruction used for LLVM codegen"
+	yulAssert(false, "EVM instruction used for LLVM codegen");
 	return {};
 }
 

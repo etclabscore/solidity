@@ -52,33 +52,51 @@ string LLVMIRCodeTransform::run(Dialect const& _dialect, yul::Block const& _ast)
 	//return &transform.m_module; // FIXME: return properly
 }
 
+void generateMultiAssignment(
+	unique_ptr<llvm::Value*> _firstValue
+)
+{
+	// NOTE: We expect the caller to have correctly positioned the builder before generating assignments.
+	yulAssert(!_variableNames.empty(), "");
+	
+	if (_variableNames.size() == 1) {
+		llvm::Value* alloca = m_builder.CreateAlloca(*_firstValue->getType());
+		m_builder.CreateStore(*_firstValue, _alloca);
+	}
+
+	// TODO: multi assignments
+	//for (size_t i = 1; i < _variableNames.size(); i++) {
+	//	llvm::Value* alloca = m_builder.CreateAlloca(/* type of index i of var decls */);
+	//	m_builder.createStore(/* Value of ith expression*/, alloca);
+	//}
+}
+
 // Creates a basic block containing a set of allocas + stores to append to another block
 llvm::Value* LLVMIRCodeTransform::operator()(VariableDeclaration const& _varDecl)
 {
+	// Init declaration block
 	llvm::BasicBlock* ret = llvm::BasicBlock::Create(m_context);
 	m_builder.SetInsertPoint(ret);
-	if (_varDecl.value) {
-		llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_varDecl.value);
 
-		for (auto const& var: _varDecl.variables) {
-			// NOTE: Right now we do not check that init_expr returns multiple values.
-			// TODO: Fix this
-			m_builder.CreateLoad(init_expr->getType(), &*init_expr);
-		}
-	} else {
-		for (auto const& var: _varDecl.variables) {
-			m_builder.CreateAlloca(m_types.from_yul(var.type));
-		}
+	for (auto const& v: _varDecl.variables) {
+		// Create alloca for variable.
+		let alloca = m_builder.CreateAlloca(m_types.from_yul(var.type), nullptr, v.name.str());
+		m_localVariables.emplace_back(alloca);
 	}
 
+	// If a value is assigned, then generate assignment code as well.
+	if (_varDecl.value) {
+		llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_varDecl.value);
+		generateMultiAssignment(init_expr);
+	}
 	return ret;
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(Assignment const& _assignment)
 {
 	// NOTE: Assumes caller has positioned the builder correctly.
+	auto const& idents = _assignment.variableNames;
 	llvm::Value* init_expr = *LLVMIRCodeTransform::visit(*_assignment.value);
-	//m_builder.CreateLoad(
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(StackAssignment const&)

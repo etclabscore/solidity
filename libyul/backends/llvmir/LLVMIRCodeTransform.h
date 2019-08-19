@@ -192,14 +192,12 @@ private:
 	llvm::Value* visit(yul::Statement const& _statement);
 	std::vector<llvm::Value*> visit(std::vector<yul::Statement> const& _statements);
 
-	/// Returns an assignment or a block containing multiple assignments.
-	/// @param _variableNames the names of the variables to assign to
+	/// Appends assignments to the current block.
 	/// @param _firstValue the value to be assigned to the first variable. If there
 	///        is more than one variable, the values are taken from m_globalVariables.
-	// llvm::Value* generateMultiAssignment(
-	// 	std::vector<std::string> _variableNames,
-	// 	std::unique_ptr<llvm::Value*> _firstValue
-	// );
+	void generateMultiAssignment(
+		std::unique_ptr<llvm::Value*> _firstValue
+	);
 
 	void translateFunction(yul::FunctionDefinition const& _funDef);
 

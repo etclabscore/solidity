@@ -83,19 +83,24 @@ llvm::Value* LLVMIRCodeTransform::operator()(Assignment const& _assignment)
 
 llvm::Value* LLVMIRCodeTransform::operator()(StackAssignment const&)
 {
+	yulAssert(false, "");
+	return {};
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(ExpressionStatement const& _statement)
 {
+	return visitReturnByValue(_statement.expression);
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(Label const&)
 {
+	yulAssert(false, "");
 	return {};
 }
 
 llvm::Value* LLVMIRCodeTransform::operator()(FunctionalInstruction const& _f)
 {
+	yulAssert(false, "EVM instruction in LLVM code: " + eth::instructionInfo(_f.instruction).name);
 	return {};
 }
 
@@ -116,6 +121,7 @@ llvm::Value* LLVMIRCodeTransform::operator()(Literal const& _literal)
 
 llvm::Value* LLVMIRCodeTransform::operator()(yul::Instruction const&)
 {
+	yulAssert(false, "EVM instruction used for LLVM codegen"
 	return {};
 }
 

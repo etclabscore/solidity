@@ -126,6 +126,27 @@ llvm::Value* LLVMIRCodeTransform::operator()(FunctionalInstruction const& _f)
 
 llvm::Value* LLVMIRCodeTransform::operator()(FunctionCall const& _call)
 {
+	// TODO: builtin funcs
+	// if (BuiltinFunction const* builtin = m_dialect.builtin(_call.functionName.name)) {
+	// 	if (_call.functionName.name.str().substr(0, 4) == "eth.") {
+	// 		yulAssert(builtin->returns.size() <= 1, "");
+	// 		if 
+
+	// 	} else if (builtin->literalArguments) {
+
+	// 	}
+	// }
+	
+	// Could be null. 
+	auto func = m_module.getFunction(_call.functionName.name.str());
+	if func {
+		auto prototype = func.getFunctionType();
+		//wip
+	} else {
+		// TODO: pre-insert functions so we know the prototype ahead of time and don't need getOrInsert
+		yulAssert(false, "couldn't find function in module.");
+	}
+	
 	return {};
 }
 
